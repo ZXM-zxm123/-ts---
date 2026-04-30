@@ -229,21 +229,24 @@ export class Game {
     return false;
   }
 
-  useItem(itemType: ItemType, row?: number, col?: number): boolean {
-    if (this.state.gameStatus !== 'playing') return false;
-    if (this.state.isAnimating) return false;
-    if (this.isItemDisabled(itemType)) return false;
-    if (this.state.items[itemType] <= 0) return false;
+  useItem(itemType: ItemType, row?: number, col?: number): { 
+    success: boolean; 
+    affectedPositions?: Position[];
+  } {
+    if (this.state.gameStatus !== 'playing') return { success: false };
+    if (this.state.isAnimating) return { success: false };
+    if (this.isItemDisabled(itemType)) return { success: false };
+    if (this.state.items[itemType] <= 0) return { success: false };
 
     switch (itemType) {
       case 'refresh':
         this.board.useRefresh();
         this.state.items[itemType]--;
         this.emit('state_change');
-        return true;
+        return { success: true };
 
       case 'bomb':
-        if (row === undefined || col === undefined) return false;
+        if (row === undefined || col === undefined) return { success: false };
         const bombResult = this.board.useBomb(row, col);
         this.state.score += bombResult.score;
         for (const mineral of bombResult.minerals) {
@@ -252,19 +255,19 @@ export class Game {
         this.state.items[itemType]--;
         this.checkGameStatus();
         this.emit('state_change');
-        return true;
+        return { success: true, affectedPositions: bombResult.affectedPositions };
 
       case 'pickaxe':
-        if (row === undefined || col === undefined) return false;
+        if (row === undefined || col === undefined) return { success: false };
         const pickaxeResult = this.board.usePickaxe(row, col);
         if (pickaxeResult) {
           this.state.items[itemType]--;
           this.emit('state_change');
         }
-        return pickaxeResult;
+        return { success: pickaxeResult, affectedPositions: pickaxeResult ? [{ row, col } : undefined };
 
       default:
-        return false;
+        return { success: false };
     }
   }
 

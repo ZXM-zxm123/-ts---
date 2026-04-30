@@ -146,27 +146,29 @@ export class Renderer {
     if (!cell) return;
 
     if (itemType === 'bomb') {
-      this.game.useItem('bomb', row, col);
-      this.animateExplosion(row, col);
-      setTimeout(() => this.render(), 300);
+      const result = this.game.useItem('bomb', row, col);
+      if (result.success && result.affectedPositions) {
+        this.animateExplosion(result.affectedPositions);
+        setTimeout(() => this.render(), 300);
+      }
     } else if (itemType === 'pickaxe') {
       if (cell.type === 'rock') {
-        this.game.useItem('pickaxe', row, col);
-        this.animateExplosion(row, col);
-        setTimeout(() => this.render(), 300);
+        const result = this.game.useItem('pickaxe', row, col);
+        if (result.success && result.affectedPositions) {
+          this.animateExplosion(result.affectedPositions);
+          setTimeout(() => this.render(), 300);
+        }
       }
     }
   }
 
-  private animateExplosion(centerRow: number, centerCol: number): void {
-    for (let r = centerRow - 1; r <= centerRow + 1; r++) {
-      for (let c = centerCol - 1; c <= centerCol + 1; c++) {
-        const cellElement = this.boardElement.querySelector(
-          `[data-row="${r}"][data-col="${c}"]`
-        ) as HTMLElement;
-        if (cellElement) {
-          cellElement.classList.add('exploding');
-        }
+  private animateExplosion(positions: Position[]): void {
+    for (const pos of positions) {
+      const cellElement = this.boardElement.querySelector(
+        `[data-row="${pos.row}"][data-col="${pos.col}"]`
+      ) as HTMLElement;
+      if (cellElement) {
+        cellElement.classList.add('exploding');
       }
     }
   }
