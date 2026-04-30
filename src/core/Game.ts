@@ -28,6 +28,7 @@ export class Game {
   }
 
   private createInitialState(): GameState {
+    const levelItems = this.currentLevelConfig.items;
     return {
       currentLevel: this.currentLevelConfig.level,
       score: 0,
@@ -38,14 +39,32 @@ export class Game {
       targetScore: this.currentLevelConfig.targetScore,
       combo: 0,
       items: {
-        refresh: ITEM_COUNT,
-        bomb: ITEM_COUNT,
-        pickaxe: ITEM_COUNT
+        refresh: levelItems.refresh,
+        bomb: levelItems.bomb,
+        pickaxe: levelItems.pickaxe
       },
       isAnimating: false,
       gameStatus: 'playing',
       selectedCell: null
     };
+  }
+
+  isItemDisabled(itemType: ItemType): boolean {
+    if (!this.currentLevelConfig.disabledItems) return false;
+    return this.currentLevelConfig.disabledItems[itemType] === true;
+  }
+
+  getDisabledItems(): ItemType[] {
+    const disabled: ItemType[] = [];
+    if (!this.currentLevelConfig.disabledItems) return disabled;
+    
+    const types: ItemType[] = ['refresh', 'bomb', 'pickaxe'];
+    for (const type of types) {
+      if (this.currentLevelConfig.disabledItems[type]) {
+        disabled.push(type);
+      }
+    }
+    return disabled;
   }
 
   private setupBoard(): void {
@@ -213,6 +232,7 @@ export class Game {
   useItem(itemType: ItemType, row?: number, col?: number): boolean {
     if (this.state.gameStatus !== 'playing') return false;
     if (this.state.isAnimating) return false;
+    if (this.isItemDisabled(itemType)) return false;
     if (this.state.items[itemType] <= 0) return false;
 
     switch (itemType) {

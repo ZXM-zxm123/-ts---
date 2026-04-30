@@ -66,17 +66,40 @@ export class Renderer {
     document.querySelectorAll('.item-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const itemType = (btn as HTMLElement).dataset.item as ItemType;
-        const state = this.game.getState();
         
-        if (state.items[itemType] > 0) {
-          if (itemType === 'refresh') {
-            this.game.useItem('refresh');
-            this.render();
-          } else {
-            this.activeItem = this.activeItem === itemType ? null : itemType;
-            this.updateItemButtons();
-          }
+        if (this.game.isItemDisabled(itemType)) {
+          this.showItemTooltip(itemType, '本关无法使用此道具');
+          return;
         }
+        
+        const state = this.game.getState();
+        if (state.items[itemType] <= 0) {
+          this.showItemTooltip(itemType, '道具次数已用完');
+          return;
+        }
+        
+        if (itemType === 'refresh') {
+          this.game.useItem('refresh');
+          this.render();
+        } else {
+          if (this.activeItem === itemType) {
+            this.activeItem = null;
+            this.showItemTooltip(itemType, '已取消选择');
+          } else {
+            this.activeItem = itemType;
+            this.showItemTooltip(itemType, '请点击棋盘上的位置');
+          }
+          this.updateItemButtons();
+        }
+      });
+      
+      btn.addEventListener('mouseenter', () => {
+        const itemType = (btn as HTMLElement).dataset.item as ItemType;
+        this.showItemHint(itemType);
+      });
+      
+      btn.addEventListener('mouseleave', () => {
+        this.hideItemHint();
       });
     });
 
@@ -155,14 +178,25 @@ export class Renderer {
       const itemType = (btn as HTMLElement).dataset.item as ItemType;
       const countSpan = btn.querySelector('.item-count') as HTMLElement;
       
+      const isDisabled = this.game.isItemDisabled(itemType);
+      const hasNoCount = state.items[itemType] <= 0;
+      
       if (countSpan) {
         countSpan.textContent = state.items[itemType].toString();
       }
       
-      if (state.items[itemType] <= 0) {
-        (btn as HTMLButtonElement).disabled = true;
+      (btn as HTMLButtonElement).disabled = isDisabled || hasNoCount;
+      
+      btn.classList.remove('disabled-type', 'no-count');
+      
+      if (isDisabled) {
+        btn.classList.add('disabled-type');
+        btn.title = '本关无法使用此道具';
+      } else if (hasNoCount) {
+        btn.classList.add('no-count');
+        btn.title = '道具次数已用完';
       } else {
-        (btn as HTMLButtonElement).disabled = false;
+        btn.title = this.getItemDescription(itemType);
       }
       
       if (this.activeItem === itemType) {
@@ -170,6 +204,56 @@ export class Renderer {
       } else {
         btn.classList.remove('active');
       }
+    });
+  }
+
+  private getItemDescription(itemType: ItemType): string {
+    const descriptions: Record<ItemType, string> = {
+      refresh: '刷新棋盘 - 随机重新排列所有宝石',
+      bomb: '炸弹 - 消除 3×3 范围内的所有元素',
+      pickaxe: '鹤嘴锄 - 直接消除一个岩石障碍'
+    };
+    return descriptions[itemType];
+  }
+
+  private showItemTooltip(itemType: ItemType, message: string): void {
+    const btn = document.querySelector(`[data-item="${itemType}"]`) as HTMLElement;
+    if (!btn) return;
+    
+    let tooltip = btn.querySelector('.item-tooltip') as HTMLElement;
+    if (!tooltip) {
+      tooltip = document.createElement('div');
+      tooltip.className = 'item-tooltip';
+      btn.style.position = 'relative';
+      btn.appendChild(tooltip);
+    }
+    
+    tooltip.textContent = message;
+    tooltip.style.display = 'block';
+    
+    setTimeout(() => {
+      if (tooltip.parentNode) {
+        tooltip.style.display = 'none';
+      }
+    }, 2000);
+  }
+
+  private showItemHint(itemType: ItemType): void {
+    const isDisabled = this.game.isItemDisabled(itemType);
+    const state = this.game.getState();
+    
+    if (isDisabled) {
+      this.showItemTooltip(itemType, '本关无法使用此道具');
+    } else if (state.items[itemType] <= 0) {
+      this.showItemTooltip(itemType, '道具次数已用完');
+    } else {
+      this.showItemTooltip(itemType, this.getItemDescription(itemType));
+    }
+  }
+
+  private hideItemHint(): void {
+    document.querySelectorAll('.item-tooltip').forEach(tooltip => {
+      (tooltip as HTMLElement).style.display = 'none';
     });
   }
 
