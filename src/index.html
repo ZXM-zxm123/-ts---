@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>钻石矿工三消游戏</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="theme-mine">
+  <div id="app">
+    <header class="game-header">
+      <h1 class="game-title">钻石矿工</h1>
+      <div class="header-controls">
+        <button id="theme-btn" class="control-btn">🎨 主题</button>
+        <button id="menu-btn" class="control-btn">📋 关卡</button>
+      </div>
+    </header>
+
+    <div id="main-menu" class="menu-screen">
+      <div class="menu-content">
+        <h2 class="menu-title">选择关卡</h2>
+        <div id="level-grid" class="level-grid"></div>
+        <button id="back-btn" class="menu-btn">返回游戏</button>
+      </div>
+    </div>
+
+    <div id="game-screen" class="game-screen">
+      <div class="game-info">
+        <div class="info-panel">
+          <div class="info-item">
+            <span class="info-label">关卡</span>
+            <span id="level-display" class="info-value">1</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">分数</span>
+            <span id="score-display" class="info-value">0</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">目标</span>
+            <span id="target-score" class="info-value">2000</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">步数</span>
+            <span id="moves-display" class="info-value">45</span>
+          </div>
+        </div>
+
+        <div class="minerals-panel">
+          <h3 class="panel-title">矿产收集</h3>
+          <div class="minerals-container">
+            <div class="mineral-item">
+              <div class="mineral-icon gold"></div>
+              <span class="mineral-count"><span id="gold-count">0</span>/<span id="gold-goal">1</span></span>
+            </div>
+            <div class="mineral-item">
+              <div class="mineral-icon silver"></div>
+              <span class="mineral-count"><span id="silver-count">0</span>/<span id="silver-goal">3</span></span>
+            </div>
+            <div class="mineral-item">
+              <div class="mineral-icon copper"></div>
+              <span class="mineral-count"><span id="copper-count">0</span>/<span id="copper-goal">5</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="game-board-container">
+        <div id="combo-display" class="combo-display hidden"></div>
+        <div id="game-board" class="game-board"></div>
+      </div>
+
+      <div class="game-controls">
+        <div class="items-panel">
+          <h3 class="panel-title">道具</h3>
+          <div class="items-container">
+            <button id="item-refresh" class="item-btn" data-item="refresh">
+              <span class="item-icon">🔄</span>
+              <span class="item-count" id="refresh-count">3</span>
+            </button>
+            <button id="item-bomb" class="item-btn" data-item="bomb">
+              <span class="item-icon">💣</span>
+              <span class="item-count" id="bomb-count">3</span>
+            </button>
+            <button id="item-pickaxe" class="item-btn" data-item="pickaxe">
+              <span class="item-icon">⛏️</span>
+              <span class="item-count" id="pickaxe-count">3</span>
+            </button>
+          </div>
+        </div>
+        <button id="reset-btn" class="control-btn">🔄 重置</button>
+      </div>
+    </div>
+
+    <div id="result-modal" class="modal hidden">
+      <div class="modal-content">
+        <h2 id="result-title" class="result-title"></h2>
+        <div id="result-stars" class="result-stars"></div>
+        <div class="result-info">
+          <p>最终分数: <span id="result-score">0</span></p>
+          <p>使用步数: <span id="result-moves">0</span></p>
+        </div>
+        <div class="result-buttons">
+          <button id="retry-btn" class="result-btn">重试</button>
+          <button id="next-btn" class="result-btn hidden">下一关</button>
+          <button id="menu-result-btn" class="result-btn">返回关卡</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="theme-modal" class="modal hidden">
+      <div class="modal-content">
+        <h2 class="result-title">选择主题</h2>
+        <div class="theme-options">
+          <button class="theme-option" data-theme="mine">
+            <span class="theme-preview" data-theme="mine"></span>
+            <span class="theme-name">矿洞</span>
+          </button>
+          <button class="theme-option" data-theme="desert">
+            <span class="theme-preview" data-theme="desert"></span>
+            <span class="theme-name">沙漠</span>
+          </button>
+          <button class="theme-option" data-theme="dungeon">
+            <span class="theme-preview" data-theme="dungeon"></span>
+            <span class="theme-name">地下城</span>
+          </button>
+        </div>
+        <button id="close-theme-btn" class="result-btn">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="bundle.js"></script>
+</body>
+</html>
