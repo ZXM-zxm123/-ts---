@@ -28,6 +28,7 @@ export class Game {
   }
 
   private createInitialState(): GameState {
+    const levelItems = this.currentLevelConfig.items;
     return {
       currentLevel: this.currentLevelConfig.level,
       score: 0,
@@ -38,14 +39,32 @@ export class Game {
       targetScore: this.currentLevelConfig.targetScore,
       combo: 0,
       items: {
-        refresh: ITEM_COUNT,
-        bomb: ITEM_COUNT,
-        pickaxe: ITEM_COUNT
+        refresh: levelItems.refresh,
+        bomb: levelItems.bomb,
+        pickaxe: levelItems.pickaxe
       },
       isAnimating: false,
       gameStatus: 'playing',
       selectedCell: null
     };
+  }
+
+  isItemDisabled(itemType: ItemType): boolean {
+    if (!this.currentLevelConfig.disabledItems) return false;
+    return this.currentLevelConfig.disabledItems[itemType] === true;
+  }
+
+  getDisabledItems(): ItemType[] {
+    const disabled: ItemType[] = [];
+    if (!this.currentLevelConfig.disabledItems) return disabled;
+    
+    const types: ItemType[] = ['refresh', 'bomb', 'pickaxe'];
+    for (const type of types) {
+      if (this.currentLevelConfig.disabledItems[type]) {
+        disabled.push(type);
+      }
+    }
+    return disabled;
   }
 
   private setupBoard(): void {
@@ -210,20 +229,24 @@ export class Game {
     return false;
   }
 
-  useItem(itemType: ItemType, row?: number, col?: number): boolean {
-    if (this.state.gameStatus !== 'playing') return false;
-    if (this.state.isAnimating) return false;
-    if (this.state.items[itemType] <= 0) return false;
+  useItem(itemType: ItemType, row?: number, col?: number): { 
+    success: boolean; 
+    affectedPositions?: Position[];
+  } {
+    if (this.state.gameStatus !== 'playing') return { success: false };
+    if (this.state.isAnimating) return { success: false };
+    if (this.isItemDisabled(itemType)) return { success: false };
+    if (this.state.items[itemType] <= 0) return { success: false };
 
     switch (itemType) {
       case 'refresh':
         this.board.useRefresh();
         this.state.items[itemType]--;
         this.emit('state_change');
-        return true;
+        return { success: true };
 
       case 'bomb':
-        if (row === undefined || col === undefined) return false;
+        if (row === undefined || col === undefined) return { success: false };
         const bombResult = this.board.useBomb(row, col);
         this.state.score += bombResult.score;
         for (const mineral of bombResult.minerals) {
@@ -232,19 +255,19 @@ export class Game {
         this.state.items[itemType]--;
         this.checkGameStatus();
         this.emit('state_change');
-        return true;
+        return { success: true, affectedPositions: bombResult.affectedPositions };
 
       case 'pickaxe':
-        if (row === undefined || col === undefined) return false;
+        if (row === undefined || col === undefined) return { success: false };
         const pickaxeResult = this.board.usePickaxe(row, col);
         if (pickaxeResult) {
           this.state.items[itemType]--;
           this.emit('state_change');
         }
-        return pickaxeResult;
+        return { success: pickaxeResult, affectedPositions: pickaxeResult ? [{ row, col } : undefined };
 
       default:
-        return false;
+        return { success: false };
     }
   }
 

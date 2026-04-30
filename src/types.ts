@@ -43,6 +43,18 @@ export interface MineralGoal {
   copper: number;
 }
 
+export interface ItemConfig {
+  refresh: number;
+  bomb: number;
+  pickaxe: number;
+}
+
+export interface DisabledItems {
+  refresh?: boolean;
+  bomb?: boolean;
+  pickaxe?: boolean;
+}
+
 export interface LevelConfig {
   level: number;
   targetScore: number;
@@ -51,6 +63,8 @@ export interface LevelConfig {
   rockCount: number;
   dirtLayerRows: number;
   mineralDensity: number;
+  items: ItemConfig;
+  disabledItems?: DisabledItems;
 }
 
 export interface LevelProgress {

@@ -504,20 +504,24 @@ body {
 
 .cell.exploding {
   animation: explode 0.3s ease-out forwards;
+  transform-origin: center center;
 }
 
 @keyframes explode {
   0% {
     transform: scale(1);
     opacity: 1;
+    box-shadow: 0 0 0 rgba(231, 76, 60, 0);
   }
-  50% {
-    transform: scale(1.5);
-    opacity: 0.8;
+  30% {
+    transform: scale(1.05);
+    opacity: 0.9;
+    box-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
   }
   100% {
-    transform: scale(0);
+    transform: scale(0.1);
     opacity: 0;
+    box-shadow: 0 0 30px rgba(231, 76, 60, 0.8);
   }
 }
 
@@ -548,8 +552,30 @@ body {
 }
 
 .item-btn:disabled {
-  opacity: 0.5;
+  opacity: 0.7;
   cursor: not-allowed;
+}
+
+.item-btn.disabled-type {
+  background: linear-gradient(145deg, #2c2c3c, #1c1c2c) !important;
+  opacity: 0.6;
+}
+
+.item-btn.disabled-type::after {
+  content: '⛔';
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  font-size: 0.7rem;
+}
+
+.item-btn.no-count {
+  background: linear-gradient(145deg, #3c3c4c, #2c2c3c) !important;
+  opacity: 0.5;
+}
+
+.item-btn.no-count .item-count {
+  background: rgba(231, 76, 60, 0.5);
 }
 
 .item-btn.active {
@@ -566,6 +592,45 @@ body {
   background: rgba(0, 0, 0, 0.3);
   padding: 2px 8px;
   border-radius: 10px;
+}
+
+.item-tooltip {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.9);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  z-index: 1000;
+  display: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  max-width: 200px;
+  word-wrap: break-word;
+  text-align: center;
+}
+
+.item-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: rgba(0, 0, 0, 0.9);
+}
+
+.item-btn.disabled-type .item-tooltip,
+.item-btn.no-count .item-tooltip {
+  background: rgba(231, 76, 60, 0.95);
+}
+
+.item-btn.disabled-type .item-tooltip::after,
+.item-btn.no-count .item-tooltip::after {
+  border-top-color: rgba(231, 76, 60, 0.95);
 }
 
 .modal {

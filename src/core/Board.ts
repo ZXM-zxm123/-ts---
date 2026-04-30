@@ -229,20 +229,20 @@ export class Board {
     return false;
   }
 
-  useBomb(row: number, col: number): { score: number; minerals: MineralType[] } {
-    const affectedCells: Position[] = [];
+  useBomb(row: number, col: number): { score: number; minerals: MineralType[]; affectedPositions: Position[] } {
+    const affectedPositions: Position[] = [];
     let minerals: MineralType[] = [];
     let score = 0;
 
     for (let r = row - 1; r <= row + 1; r++) {
       for (let c = col - 1; c <= col + 1; c++) {
         if (isValidPosition(r, c)) {
-          affectedCells.push({ row: r, col: c });
+          affectedPositions.push({ row: r, col: c });
         }
       }
     }
 
-    for (const pos of affectedCells) {
+    for (const pos of affectedPositions) {
       const cell = this.grid.getCell(pos.row, pos.col);
       if (cell) {
         if (cell.type === 'gem') {
@@ -251,7 +251,9 @@ export class Board {
         } else if (cell.type === 'dirt') {
           this.grid.setCell(pos.row, pos.col, createEmptyCell());
         } else if (cell.type === 'mineral' && cell.mineralType) {
-          minerals.push(cell.mineralType);
+          if (!cell.isHidden) {
+            minerals.push(cell.mineralType);
+          }
           this.grid.setCell(pos.row, pos.col, createEmptyCell());
         } else if (cell.type === 'rock') {
           this.grid.setCell(pos.row, pos.col, createEmptyCell());
@@ -259,8 +261,8 @@ export class Board {
       }
     }
 
-    this.emit('item', { type: 'bomb', cells: affectedCells });
-    return { score, minerals };
+    this.emit('item', { type: 'bomb', cells: affectedPositions });
+    return { score, minerals, affectedPositions };
   }
 
   usePickaxe(row: number, col: number): boolean {
