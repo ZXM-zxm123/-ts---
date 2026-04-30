@@ -20,7 +20,8 @@ export const LEVELS: LevelConfig[] = [
     mineralGoal: { gold: 1, silver: 3, copper: 5 },
     rockCount: 0,
     dirtLayerRows: 2,
-    mineralDensity: 0.4
+    mineralDensity: 0.4,
+    items: { refresh: 3, bomb: 3, pickaxe: 3 }
   },
   {
     level: 2,
@@ -29,7 +30,8 @@ export const LEVELS: LevelConfig[] = [
     mineralGoal: { gold: 2, silver: 5, copper: 8 },
     rockCount: 2,
     dirtLayerRows: 3,
-    mineralDensity: 0.5
+    mineralDensity: 0.5,
+    items: { refresh: 3, bomb: 3, pickaxe: 3 }
   },
   {
     level: 3,
@@ -38,7 +40,8 @@ export const LEVELS: LevelConfig[] = [
     mineralGoal: { gold: 3, silver: 8, copper: 12 },
     rockCount: 4,
     dirtLayerRows: 4,
-    mineralDensity: 0.6
+    mineralDensity: 0.6,
+    items: { refresh: 2, bomb: 2, pickaxe: 3 }
   },
   {
     level: 4,
@@ -47,7 +50,8 @@ export const LEVELS: LevelConfig[] = [
     mineralGoal: { gold: 5, silver: 12, copper: 15 },
     rockCount: 6,
     dirtLayerRows: 5,
-    mineralDensity: 0.7
+    mineralDensity: 0.7,
+    items: { refresh: 2, bomb: 2, pickaxe: 2 }
   },
   {
     level: 5,
@@ -56,7 +60,8 @@ export const LEVELS: LevelConfig[] = [
     mineralGoal: { gold: 8, silver: 15, copper: 20 },
     rockCount: 8,
     dirtLayerRows: 5,
-    mineralDensity: 0.8
+    mineralDensity: 0.8,
+    items: { refresh: 1, bomb: 1, pickaxe: 2 }
   }
 ];
 
